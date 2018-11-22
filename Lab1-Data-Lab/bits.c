@@ -206,7 +206,11 @@ int negate(int x) {
  *   Rating: 3
  */
 int isAsciiDigit(int x) {
-	return 2;
+	int mask = 0xF;
+	int highBits = x & ~mask;
+	int lowBits = x & mask;
+	int upperBound = (0x9 + ~lowBits + 1) >> 31 & 1;
+	return !(highBits ^ 0x30) & !upperBound;
 }
 /* 
  * conditional - same as x ? y : z 
@@ -228,8 +232,14 @@ int conditional(int x, int y, int z) {
  *   Rating: 3
  */
 int isLessOrEqual(int x, int y) {
-	int yMinusX = y + ~x + 1;
-	return !(yMinusX >> 31);
+	int mask = 1 << 31;
+	int digitMask = ~mask;
+	int signCompare = (x & ~y) >> 31;
+	int signEqual = (x ^ y) >> 31;
+	int xDigitBits = x & digitMask;
+	int yDigitBits = y & digitMask;
+	int digitCompare = (yDigitBits + ~xDigitBits + 1) >> 31;
+	return (signCompare | ~(signEqual | digitCompare)) & 1;
 }
 //4
 /* 
@@ -261,7 +271,40 @@ int logicalNeg(int x) {
  *  Rating: 4
  */
 int howManyBits(int x) {
-  return 0;
+	int bits = ((x << 1) ^ x) | 1;
+	int mask = ~0 << 16;
+	int count = 32;
+	int flag;
+
+	flag = bits & mask;
+	flag = !flag << 31 >> 31;
+	count = count + ((~16 + 1) & flag);
+	mask = mask >> (8 & flag);
+	mask = mask << (8 & ~flag);
+
+	flag = bits & mask;
+	flag = !flag << 31 >> 31;
+	count = count + ((~8 + 1) & flag);
+	mask = mask >> (4 & flag);
+	mask = mask << (4 & ~flag);
+
+	flag = bits & mask;
+	flag = !flag << 31 >> 31;
+	count = count + ((~4 + 1) & flag);
+	mask = mask >> (2 & flag);
+	mask = mask << (2 & ~flag);
+
+	flag = bits & mask;
+	flag = !flag << 31 >> 31;
+	count = count + ((~2 + 1) & flag);
+	mask = mask >> (1 & flag);
+	mask = mask << (1 & ~flag);
+
+	flag = bits & mask;
+	flag = !flag << 31 >> 31;
+	count = count + (~0 & flag);
+
+	return count;
 }
 //float
 /* 
