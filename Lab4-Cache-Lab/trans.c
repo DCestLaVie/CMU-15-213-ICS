@@ -25,63 +25,63 @@ void transpose_M_N(int M, int N, int A[N][M], int B[M][N]);
 char transpose_submit_desc[] = "Transpose submission";
 void transpose_submit(int M, int N, int A[N][M], int B[M][N])
 {
-	if(M == 64 && N == 64) {
-		transpose_64_64(M, N, A, B);
-	} else {
-		transpose_M_N(M, N, A, B);
-	}
+    if(M == 64 && N == 64) {
+        transpose_64_64(M, N, A, B);
+    } else {
+        transpose_M_N(M, N, A, B);
+    }
 }
 
 void transpose_64_64(int M, int N, int A[N][M], int B[M][N]) {
-	int temp_0, temp_1, temp_2, temp_3;
-	int temp_4, temp_5, temp_6, temp_7;
-	int i, j, k;
-	for(i = 0; i < 64; i += 8) {
-		for(j = 0; j < 64; j += 8) {
-			for(k = i; k < i + 4; ++k) {
-				temp_0 = A[k][j];
-				temp_1 = A[k][j+1];
-				temp_2 = A[k][j+2];
-				temp_3 = A[k][j+3];
-				temp_4 = A[k][j+4];
-				temp_5 = A[k][j+5];
-				temp_6 = A[k][j+6];
-				temp_7 = A[k][j+7];
+    int temp_0, temp_1, temp_2, temp_3;
+    int temp_4, temp_5, temp_6, temp_7;
+    int i, j, k;
+    for(i = 0; i < 64; i += 8) {
+        for(j = 0; j < 64; j += 8) {
+            for(k = i; k < i + 4; ++k) {
+                temp_0 = A[k][j];
+                temp_1 = A[k][j+1];
+                temp_2 = A[k][j+2];
+                temp_3 = A[k][j+3];
+                temp_4 = A[k][j+4];
+                temp_5 = A[k][j+5];
+                temp_6 = A[k][j+6];
+                temp_7 = A[k][j+7];
 
-				B[j][k] = temp_0;
-				B[j+1][k] = temp_1;
-				B[j+2][k] = temp_2;
-				B[j+3][k] = temp_3;
-				B[j][k+4] = temp_7;
-				B[j+1][k+4] = temp_6;
-				B[j+2][k+4] = temp_5;
-				B[j+3][k+4] = temp_4;
-			}
-            for(k = 0; k < 4; ++k) {
-            	temp_0 = A[i+4][j+3-k];
-				temp_1 = A[i+5][j+3-k];
-				temp_2 = A[i+6][j+3-k];
-				temp_3 = A[i+7][j+3-k];
-				temp_4 = A[i+4][j+4+k];
-				temp_5 = A[i+5][j+4+k];
-				temp_6 = A[i+6][j+4+k];
-				temp_7 = A[i+7][j+4+k];
-
-				B[j+4+k][i] = B[j+3-k][i+4];
-				B[j+4+k][i+1] = B[j+3-k][i+5];
-				B[j+4+k][i+2] = B[j+3-k][i+6];
-				B[j+4+k][i+3] = B[j+3-k][i+7];
-				B[j+4+k][i+4] = temp_4;
-				B[j+4+k][i+5] = temp_5;
-				B[j+4+k][i+6] = temp_6;
-				B[j+4+k][i+7] = temp_7;
-				B[j+3-k][i+4] = temp_0;
-				B[j+3-k][i+5] = temp_1;
-				B[j+3-k][i+6] = temp_2;
-				B[j+3-k][i+7] = temp_3;
+                B[j][k] = temp_0;
+                B[j+1][k] = temp_1;
+                B[j+2][k] = temp_2;
+                B[j+3][k] = temp_3;
+                B[j][k+4] = temp_7;
+                B[j+1][k+4] = temp_6;
+                B[j+2][k+4] = temp_5;
+                B[j+3][k+4] = temp_4;
             }
-		}
-	}
+            for(k = 0; k < 4; ++k) {
+                temp_0 = A[i+4][j+3-k];
+                temp_1 = A[i+5][j+3-k];
+                temp_2 = A[i+6][j+3-k];
+                temp_3 = A[i+7][j+3-k];
+                temp_4 = A[i+4][j+4+k];
+                temp_5 = A[i+5][j+4+k];
+                temp_6 = A[i+6][j+4+k];
+                temp_7 = A[i+7][j+4+k];
+
+                B[j+4+k][i] = B[j+3-k][i+4];
+                B[j+4+k][i+1] = B[j+3-k][i+5];
+                B[j+4+k][i+2] = B[j+3-k][i+6];
+                B[j+4+k][i+3] = B[j+3-k][i+7];
+                B[j+4+k][i+4] = temp_4;
+                B[j+4+k][i+5] = temp_5;
+                B[j+4+k][i+6] = temp_6;
+                B[j+4+k][i+7] = temp_7;
+                B[j+3-k][i+4] = temp_0;
+                B[j+3-k][i+5] = temp_1;
+                B[j+3-k][i+6] = temp_2;
+                B[j+3-k][i+7] = temp_3;
+            }
+        }
+    }
 }
 
 void transpose_M_N(int M, int N, int A[N][M], int B[M][N]) {
@@ -89,22 +89,22 @@ void transpose_M_N(int M, int N, int A[N][M], int B[M][N]) {
     int temp, diagonal = -1;
     int per_row = 16, per_col = 8;
     for(i = 0; i < N; i += per_row) {
-    	for(j = 0; j < M; j += per_col) {
-    		for(k = i; k < N && k < i + per_row; ++k) {
-    			for(m = j; m < M && m < j + per_col; ++m) {
-    				if(m == k) {
-    					diagonal = m;
-    					temp = A[k][m];
-    				} else {
-						B[m][k] = A[k][m];
-    				}
-    			}
-    			if(diagonal != -1) {
-    				B[diagonal][diagonal] = temp;
-    				diagonal = -1;
-    			}
-    		}
-    	}
+        for(j = 0; j < M; j += per_col) {
+            for(k = i; k < N && k < i + per_row; ++k) {
+                for(m = j; m < M && m < j + per_col; ++m) {
+                    if(m == k) {
+                        diagonal = m;
+                        temp = A[k][m];
+                    } else {
+                        B[m][k] = A[k][m];
+                    }
+                }
+                if(diagonal != -1) {
+                    B[diagonal][diagonal] = temp;
+                    diagonal = -1;
+                }
+            }
+        }
     }
 }
 
